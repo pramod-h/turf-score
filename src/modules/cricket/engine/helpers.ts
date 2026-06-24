@@ -21,9 +21,14 @@ export function isOverComplete(legalBalls: number) {
 }
 
 export function isInningsOver(state: LiveInningsState): boolean {
+  const totalBatters = Object.keys(state.battingStats).length;
+  // innings ends when only 1 batter remains — can't bat alone
+  const lastBatterStanding = totalBatters > 0 && state.wickets >= totalBatters - 1;
+
   return (
     state.legalBalls >= state.oversLimit * 6 ||
-    state.wickets >= state.wicketsLimit
+    state.wickets >= state.wicketsLimit ||
+    lastBatterStanding
   );
 }
 

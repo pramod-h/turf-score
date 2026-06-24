@@ -15,6 +15,7 @@ export type MatchListItem = {
   team_b_name: string;
   status: string;
   created_at: string;
+  wickets_per_innings: number;
   innings: MatchInningsSummary[];
 };
 
@@ -22,7 +23,7 @@ export async function getMatches(): Promise<MatchListItem[]> {
   const { data, error } = await supabase
     .from("matches")
     .select(
-      "id, name, team_a_name, team_b_name, status, created_at, innings(inning_number, batting_team, total_runs, wickets, legal_balls)",
+      "id, name, team_a_name, team_b_name, status, created_at, wickets_per_innings, innings(inning_number, batting_team, total_runs, wickets, legal_balls)",
     )
     .order("created_at", { ascending: false });
 

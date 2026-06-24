@@ -33,10 +33,9 @@ export function createBaseLiveState(
     (player) => player.team_name === innings.bowling_team,
   );
 
-  const striker = innings.striker_id ?? battingPlayers[0]?.id ?? null;
-  const nonStriker = innings.non_striker_id ?? battingPlayers[1]?.id ?? null;
-  const currentBowler =
-    innings.current_bowler_id ?? bowlingPlayers[0]?.id ?? null;
+  const striker = innings.striker_id ?? null;
+  const nonStriker = innings.non_striker_id ?? null;
+  const currentBowler = innings.current_bowler_id ?? null;
 
   const battingStats = Object.fromEntries(
     battingPlayers.map((player) => [

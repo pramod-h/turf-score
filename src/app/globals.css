@@ -49,76 +49,85 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* CricLive dark — Image 2 aesthetic */
+/* Minimal Material dark palette */
 :root {
-  --background: #0C0E1A;
-  --foreground: #F0F2FF;
-  --card: #131525;
-  --card-foreground: #F0F2FF;
-  --popover: #131525;
-  --popover-foreground: #F0F2FF;
-  --primary: #22C55E;
-  --primary-foreground: #FFFFFF;
-  --secondary: #1C1F35;
-  --secondary-foreground: #F0F2FF;
-  --muted: #171929;
-  --muted-foreground: #6B7094;
-  --accent: #1C1F35;
-  --accent-foreground: #F0F2FF;
-  --destructive: #EF4444;
-  --destructive-foreground: #FFFFFF;
-  --border: #1C1F35;
-  --input: #1C1F35;
-  --ring: #22C55E;
-  --chart-1: #22C55E;
-  --chart-2: #EF4444;
-  --chart-3: #3B82F6;
-  --chart-4: #F59E0B;
-  --chart-5: #8B8BA8;
-  --radius: 0.75rem;
-  --sidebar: #131525;
-  --sidebar-foreground: #F0F2FF;
-  --sidebar-primary: #22C55E;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #1C1F35;
-  --sidebar-accent-foreground: #F0F2FF;
-  --sidebar-border: #1C1F35;
-  --sidebar-ring: #22C55E;
+  --background: #111315;
+  --foreground: #e4e7eb;
+  --card: #1a1d20;
+  --card-foreground: #e4e7eb;
+  --popover: #1d2024;
+  --popover-foreground: #e4e7eb;
+  --primary: #90caf9;
+  --primary-foreground: #071923;
+  --secondary: #24282d;
+  --secondary-foreground: #c8ced6;
+  --muted: #202428;
+  --muted-foreground: #9aa4ad;
+  --accent: #ffcc80;
+  --accent-foreground: #251600;
+  --destructive: #ef9a9a;
+  --destructive-foreground: #ffffff;
+  --border: #30363d;
+  --input: #24282d;
+  --ring: #90caf9;
+  --chart-1: #90caf9;
+  --chart-2: #ffcc80;
+  --chart-3: #a5d6a7;
+  --chart-4: #ef9a9a;
+  --chart-5: #9aa4ad;
+  --radius: 0.875rem;
+  --sidebar: #1a1d20;
+  --sidebar-foreground: #e4e7eb;
+  --sidebar-primary: #90caf9;
+  --sidebar-primary-foreground: #071923;
+  --sidebar-accent: #24282d;
+  --sidebar-accent-foreground: #e4e7eb;
+  --sidebar-border: #30363d;
+  --sidebar-ring: #90caf9;
 }
 
-.dark {
-  --background: #0C0E1A;
-  --foreground: #F0F2FF;
-  --card: #131525;
-  --card-foreground: #F0F2FF;
-  --popover: #131525;
-  --popover-foreground: #F0F2FF;
-  --primary: #22C55E;
-  --primary-foreground: #FFFFFF;
-  --secondary: #1C1F35;
-  --secondary-foreground: #F0F2FF;
-  --muted: #171929;
-  --muted-foreground: #6B7094;
-  --accent: #1C1F35;
-  --accent-foreground: #F0F2FF;
-  --destructive: #EF4444;
-  --destructive-foreground: #FFFFFF;
-  --border: #1C1F35;
-  --input: #1C1F35;
-  --ring: #22C55E;
-  --chart-1: #22C55E;
-  --chart-2: #EF4444;
-  --chart-3: #3B82F6;
-  --chart-4: #F59E0B;
-  --chart-5: #8B8BA8;
-  --sidebar: #131525;
-  --sidebar-foreground: #F0F2FF;
-  --sidebar-primary: #22C55E;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #1C1F35;
-  --sidebar-accent-foreground: #F0F2FF;
-  --sidebar-border: #1C1F35;
-  --sidebar-ring: #22C55E;
+@keyframes cricket-ball-float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(-16deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(-16deg);
+  }
+}
+
+@keyframes cricket-ring-pulse {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.55;
+  }
+  70% {
+    transform: scale(1.18);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.18);
+    opacity: 0;
+  }
+}
+
+@keyframes cricket-orbit-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes cricket-seam-glow {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 @layer base {
@@ -132,3 +141,4 @@
     @apply font-sans;
   }
 }
+

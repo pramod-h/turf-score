@@ -20,6 +20,7 @@ import { undoLastLiveEvent } from "@/modules/match/undo-last-live-event";
 import { startSecondInnings } from "@/modules/match/start-second-innings";
 import { addLivePlayer } from "@/modules/match/add-live-player";
 import { finishMatch } from "@/modules/match/finish-match";
+import { saveInningsOpeners } from "@/modules/match/save-innings-openers";
 
 
 export type MatchRow = {
@@ -104,6 +105,18 @@ export type LiveScoringController = {
 
   hasEvents: boolean;
 
+  needsOpenerSelection: boolean;
+  openerStrikerId: string | null;
+  openerNonStrikerId: string | null;
+  openerBowlerId: string | null;
+  setOpenerStrikerId: (id: string) => void;
+  setOpenerNonStrikerId: (id: string) => void;
+  setOpenerBowlerId: (id: string) => void;
+  confirmOpeners: () => Promise<void>;
+  confirmingOpeners: boolean;
+  battingPlayerOptions: Array<{ id: string; name: string }>;
+  bowlingPlayerOptions: Array<{ id: string; name: string }>;
+
   error: string | null;
   clearError: () => void;
 
@@ -157,6 +170,11 @@ export function useLiveScoringController({
   const [addingPlayer, setAddingPlayer] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
+
+  const [openerStrikerId, setOpenerStrikerId] = useState<string | null>(null);
+  const [openerNonStrikerId, setOpenerNonStrikerId] = useState<string | null>(null);
+  const [openerBowlerId, setOpenerBowlerId] = useState<string | null>(null);
+  const [confirmingOpeners, setConfirmingOpeners] = useState(false);
 
   useEffect(() => {
     if (!error) return;
@@ -212,6 +230,48 @@ export function useLiveScoringController({
       })),
     [liveState],
   );
+
+  const needsOpenerSelection =
+    !isMatchCompleted &&
+    !liveState.strikerId &&
+    events.length === 0;
+
+  const battingPlayerOptions = useMemo(
+    () => Object.values(liveState.battingStats).map((p) => ({ id: p.playerId, name: p.name })),
+    [liveState.battingStats],
+  );
+  const bowlingPlayerOptions = useMemo(
+    () => Object.values(liveState.bowlingStats).map((p) => ({ id: p.playerId, name: p.name })),
+    [liveState.bowlingStats],
+  );
+
+  const confirmOpeners = async () => {
+    if (!openerStrikerId || !openerNonStrikerId || !openerBowlerId || confirmingOpeners) return;
+    try {
+      setConfirmingOpeners(true);
+      await saveInningsOpeners({
+        inningsId: liveState.inningsId,
+        strikerId: openerStrikerId,
+        nonStrikerId: openerNonStrikerId,
+        currentBowlerId: openerBowlerId,
+      });
+      const patched: LiveInningsState = {
+        ...currentBaseState,
+        strikerId: openerStrikerId,
+        nonStrikerId: openerNonStrikerId,
+        currentBowlerId: openerBowlerId,
+        yetToBat: currentBaseState.yetToBat.filter(
+          (id) => id !== openerStrikerId && id !== openerNonStrikerId,
+        ),
+      };
+      setCurrentBaseState(patched);
+      setLiveState(patched);
+    } catch {
+      setError("Couldn't save lineup — please try again.");
+    } finally {
+      setConfirmingOpeners(false);
+    }
+  };
 
   const secondInningsResult =
     isSecondInnings && inningsDone && target !== null && firstInnings
@@ -323,10 +383,11 @@ export function useLiveScoringController({
     if (!liveState.strikerId) return;
 
     if (liveState.yetToBat.length === 0) {
+      // last pair — innings ends after this wicket, no next batter to select
       const event: BallEventInput = {
         type: "WICKET",
         outPlayerId: liveState.strikerId,
-        nextBatterId: liveState.strikerId,
+        nextBatterId: liveState.nonStrikerId ?? liveState.strikerId,
       };
       const nextEvents = [...events, event];
       const nextState = rebuildFromEvents(nextEvents);
@@ -559,6 +620,18 @@ export function useLiveScoringController({
     bowler,
 
     hasEvents: events.length > 0,
+
+    needsOpenerSelection,
+    openerStrikerId,
+    openerNonStrikerId,
+    openerBowlerId,
+    setOpenerStrikerId,
+    setOpenerNonStrikerId,
+    setOpenerBowlerId,
+    confirmOpeners,
+    confirmingOpeners,
+    battingPlayerOptions,
+    bowlingPlayerOptions,
 
     error,
     clearError: () => setError(null),

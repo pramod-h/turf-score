@@ -46,10 +46,6 @@ export async function startSecondInnings(params: {
     throw new Error("Second innings requires at least 1 bowling player");
   }
 
-  const strikerId = battingPlayers[0].id;
-  const nonStrikerId = battingPlayers[1].id;
-  const currentBowlerId = bowlingPlayers[0].id;
-
   // prevent duplicate second innings creation
   const { data: existingSecondInnings, error: existingError } = await supabase
     .from("innings")
@@ -84,9 +80,9 @@ export async function startSecondInnings(params: {
       total_runs: 0,
       wickets: 0,
       legal_balls: 0,
-      striker_id: strikerId,
-      non_striker_id: nonStrikerId,
-      current_bowler_id: currentBowlerId,
+      striker_id: null,
+      non_striker_id: null,
+      current_bowler_id: null,
     })
     .select("id")
     .single();

@@ -16,11 +16,16 @@ export default async function HomePage() {
       {liveMatches.length > 0 ? <AutoRefresh /> : null}
 
       {/* Branding header */}
-      <div className="flex items-center justify-between pt-8 pb-6">
+      <div
+        className="rounded-2xl border border-border bg-card px-4 py-5 mt-6 mb-5 flex items-center justify-between"
+        style={{
+          boxShadow: "0 8px 24px rgba(0,0,0,0.24)",
+        }}
+      >
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-base">🏏</span>
-            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
               Turf Score
             </p>
           </div>
@@ -44,7 +49,7 @@ export default async function HomePage() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
           </span>
-          <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+          <p className="text-xs font-bold uppercase tracking-widest text-primary">
             Live
           </p>
         </div>
