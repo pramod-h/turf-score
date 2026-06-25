@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { AppHeader } from "@/components/app-header";
 import { DesktopNotice } from "@/components/desktop-notice";
 import { ThemeProvider } from "@/components/theme-provider";
+import { PwaRegister } from "@/components/pwa-register";
 import "./globals.css";
 
 
@@ -34,6 +35,11 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://turf-score.vercel.app"
   ),
   title: "Turf Score",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Turf Score",
+  },
   description:
     "Real-time cricket scoring for turf matches. Track live scores, ball-by-ball updates, batting & bowling stats, and match results — built for weekend warriors.",
   icons: {
@@ -91,6 +97,7 @@ export default function RootLayout({
           </div>
           <SpeedInsights />
           <Analytics />
+          <PwaRegister />
         </ThemeProvider>
       </body>
     </html>

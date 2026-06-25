@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import { Mic } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LiveChaseCard } from "@/components/live-score/live-chase-card";
 import { MatchTabs } from "@/components/live-score/match-tabs";
@@ -10,6 +12,20 @@ import {
   LiveScoreClientProps,
   useLiveScoringController,
 } from "@/components/live-score/use-live-scoring-controller";
+import { useVoiceScore, isVoiceSupported } from "@/hooks/use-voice-score";
+import { useVoiceStore } from "@/stores/voice-store";
+
+const ACTION_LABELS: Record<string, string> = {
+  DOT: "Dot",
+  RUN_1: "1 Run",
+  RUN_2: "2 Runs",
+  RUN_4: "Four!",
+  RUN_6: "Six!",
+  WIDE: "Wide",
+  NO_BALL: "No Ball",
+  WICKET: "Wicket!",
+  UNDO: "Undo",
+};
 
 function ErrorBanner({
   message,
@@ -35,6 +51,66 @@ function ErrorBanner({
 
 export function LiveScoreClient(props: LiveScoreClientProps) {
   const c = useLiveScoringController(props);
+
+  const {
+    voiceEnabled,
+    listening,
+    lastAction,
+    lastTranscript,
+    setListening,
+    setLastAction,
+    setLastTranscript,
+    setSupported,
+  } = useVoiceStore();
+
+  // Tell the store whether this device supports voice
+  useEffect(() => {
+    setSupported(isVoiceSupported());
+  }, [setSupported]);
+
+  const applyRef = useRef(c.apply);
+  applyRef.current = c.apply;
+  const handleWicketRef = useRef(c.handleWicketClick);
+  handleWicketRef.current = c.handleWicketClick;
+  const handleUndoRef = useRef(c.handleUndo);
+  handleUndoRef.current = c.handleUndo;
+
+  const { start, stop } = useVoiceScore({
+    handlers: {
+      DOT: () => void applyRef.current("DOT"),
+      RUN_1: () => void applyRef.current("RUN_1"),
+      RUN_2: () => void applyRef.current("RUN_2"),
+      RUN_4: () => void applyRef.current("RUN_4"),
+      RUN_6: () => void applyRef.current("RUN_6"),
+      WIDE: () => void applyRef.current("WIDE"),
+      NO_BALL: () => void applyRef.current("NO_BALL"),
+      WICKET: () => handleWicketRef.current(),
+      UNDO: () => void handleUndoRef.current(),
+    },
+    onListening: setListening,
+    onAction: (a) => {
+      setLastAction(a);
+      setTimeout(() => setLastAction(null), 2500);
+    },
+    onTranscript: setLastTranscript,
+    autoRestart: true,
+  });
+
+  // Start / stop based on voiceEnabled toggle
+  useEffect(() => {
+    if (voiceEnabled) {
+      start();
+    } else {
+      stop();
+      setLastAction(null);
+      setLastTranscript("");
+    }
+    return () => {
+      stop();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [voiceEnabled]);
+
   const hasBottomChoice =
     c.pendingWicket || c.pendingBowlerChange || c.needsOpenerSelection;
   const shouldShowScorePad =
@@ -42,15 +118,23 @@ export function LiveScoreClient(props: LiveScoreClientProps) {
     !c.inningsDone &&
     !c.showAddPlayer &&
     !c.addingPlayer &&
+    !hasBottomChoice &&
+    !voiceEnabled;
+  const shouldShowVoicePanel =
+    voiceEnabled &&
+    !c.isMatchCompleted &&
     !hasBottomChoice;
-  const shouldShowBottomControls = hasBottomChoice || shouldShowScorePad;
+  const shouldShowBottomControls =
+    hasBottomChoice || shouldShowScorePad || shouldShowVoicePanel;
   const bottomLabel = c.pendingWicket
     ? "Next batter"
     : c.pendingBowlerChange
       ? "Next bowler"
       : c.needsOpenerSelection
         ? "Lineup"
-        : "Score pad";
+        : voiceEnabled
+          ? "Voice scoring"
+          : "Score pad";
 
   return (
     <div className="flex flex-col h-[calc(100dvh-3.5rem)] bg-background">
@@ -111,10 +195,10 @@ export function LiveScoreClient(props: LiveScoreClientProps) {
         />
       </div>
 
-      {/* ── Fixed bottom: pickers + scoring pad ── */}
+      {/* ── Fixed bottom: pickers + scoring pad + voice panel ── */}
       {shouldShowBottomControls ? (
         <div className="shrink-0 bg-background">
-          {/* Drag handle — acts as a scroll buffer so fingers don't land on buttons */}
+          {/* Drag handle */}
           <div className="flex items-center justify-center gap-3 py-2.5">
             <div className="h-[3px] w-7 rounded-full bg-border" />
             <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground/60">
@@ -123,7 +207,7 @@ export function LiveScoreClient(props: LiveScoreClientProps) {
             <div className="h-[3px] w-7 rounded-full bg-border" />
           </div>
           <div className="border-t border-border px-3 pb-4 pt-2 space-y-2">
-            {/* Wicket picker — slides in above pad */}
+            {/* Wicket picker */}
             {c.pendingWicket ? (
               <div className="rounded-2xl bg-card border border-destructive/40 p-4 space-y-3">
                 <p className="text-xs font-semibold uppercase tracking-widest text-destructive">
@@ -168,7 +252,7 @@ export function LiveScoreClient(props: LiveScoreClientProps) {
               </div>
             ) : null}
 
-            {/* Bowler picker — slides in above pad */}
+            {/* Bowler picker */}
             {c.pendingBowlerChange ? (
               <div className="rounded-2xl bg-card border border-primary/30 p-4 space-y-3">
                 <p className="text-xs font-semibold uppercase tracking-widest text-primary">
@@ -201,7 +285,7 @@ export function LiveScoreClient(props: LiveScoreClientProps) {
               </div>
             ) : null}
 
-            {/* Opener selection — shown before first ball */}
+            {/* Opener selection */}
             {c.needsOpenerSelection ? (
               <div
                 className="rounded-2xl p-4 space-y-4"
@@ -238,8 +322,7 @@ export function LiveScoreClient(props: LiveScoreClientProps) {
                         style={
                           c.openerStrikerId === p.id
                             ? {
-                                background:
-                                  "var(--primary)",
+                                background: "var(--primary)",
                                 color: "var(--primary-foreground)",
                                 boxShadow: "var(--shadow-neu-red)",
                               }
@@ -272,17 +355,16 @@ export function LiveScoreClient(props: LiveScoreClientProps) {
                           className="flex-1 min-w-[30%] rounded-xl py-2.5 px-3 text-sm font-semibold transition-all active:scale-95"
                           style={
                             c.openerNonStrikerId === p.id
-                            ? {
-                                background:
-                                  "var(--primary)",
-                                color: "var(--primary-foreground)",
-                                boxShadow: "var(--shadow-neu-red)",
-                              }
-                            : {
-                                background: "var(--background)",
-                                color: "var(--muted-foreground)",
-                                boxShadow: "var(--shadow-neu-raised-xs)",
-                              }
+                              ? {
+                                  background: "var(--primary)",
+                                  color: "var(--primary-foreground)",
+                                  boxShadow: "var(--shadow-neu-red)",
+                                }
+                              : {
+                                  background: "var(--background)",
+                                  color: "var(--muted-foreground)",
+                                  boxShadow: "var(--shadow-neu-raised-xs)",
+                                }
                           }
                         >
                           {p.name}
@@ -305,16 +387,18 @@ export function LiveScoreClient(props: LiveScoreClientProps) {
                         className="flex-1 min-w-[30%] rounded-xl py-2.5 px-3 text-sm font-semibold transition-all active:scale-95"
                         style={
                           c.openerBowlerId === p.id
-                          ? {
-                              background: "linear-gradient(145deg,#2979FF,#1565C0)",
-                              color: "#E3F2FD",
-                              boxShadow: "4px 4px 10px rgba(21,101,192,0.38), -2px -2px 6px var(--neu-highlight)",
-                            }
-                          : {
-                              background: "var(--background)",
-                              color: "var(--muted-foreground)",
-                              boxShadow: "var(--shadow-neu-raised-xs)",
-                            }
+                            ? {
+                                background:
+                                  "linear-gradient(145deg,#2979FF,#1565C0)",
+                                color: "#E3F2FD",
+                                boxShadow:
+                                  "4px 4px 10px rgba(21,101,192,0.38), -2px -2px 6px var(--neu-highlight)",
+                              }
+                            : {
+                                background: "var(--background)",
+                                color: "var(--muted-foreground)",
+                                boxShadow: "var(--shadow-neu-raised-xs)",
+                              }
                         }
                       >
                         {p.name}
@@ -333,11 +417,11 @@ export function LiveScoreClient(props: LiveScoreClientProps) {
                   }
                   onClick={() => void c.confirmOpeners()}
                   className="w-full rounded-xl py-3 text-sm font-bold text-white uppercase tracking-widest transition-all active:scale-95 disabled:opacity-40"
-                style={{
-                  background: "var(--primary)",
-                  color: "var(--primary-foreground)",
-                  boxShadow: "var(--shadow-neu-red-lg)",
-                }}
+                  style={{
+                    background: "var(--primary)",
+                    color: "var(--primary-foreground)",
+                    boxShadow: "var(--shadow-neu-red-lg)",
+                  }}
                 >
                   {c.confirmingOpeners ? "Saving…" : "Start Match →"}
                 </button>
@@ -355,10 +439,94 @@ export function LiveScoreClient(props: LiveScoreClientProps) {
                 onUndo={() => void c.handleUndo()}
                 canUndo={c.hasEvents}
               />
+            ) : shouldShowVoicePanel ? (
+              <VoicePanel
+                listening={listening}
+                lastAction={lastAction}
+                lastTranscript={lastTranscript}
+              />
             ) : null}
           </div>
         </div>
       ) : null}
     </div>
+  );
+}
+
+function VoicePanel({
+  listening,
+  lastAction,
+  lastTranscript,
+}: {
+  listening: boolean;
+  lastAction: string | null;
+  lastTranscript: string;
+}) {
+  return (
+    <section
+      className="rounded-2xl p-5 flex flex-col items-center gap-3"
+      style={{
+        background: "var(--background)",
+        boxShadow: "var(--shadow-neu-pad)",
+      }}
+    >
+      {/* Mic icon with animated ring */}
+      <div className="relative flex items-center justify-center">
+        {listening ? (
+          <>
+            <span
+              className="absolute h-16 w-16 rounded-full animate-ping opacity-20"
+              style={{ background: "var(--primary)" }}
+            />
+            <span
+              className="absolute h-12 w-12 rounded-full animate-ping opacity-30"
+              style={{ background: "var(--primary)", animationDelay: "0.3s" }}
+            />
+          </>
+        ) : null}
+        <div
+          className="relative flex h-14 w-14 items-center justify-center rounded-full"
+          style={
+            listening
+              ? {
+                  background: "var(--primary)",
+                  color: "var(--primary-foreground)",
+                  boxShadow: "var(--shadow-neu-red-lg)",
+                }
+              : {
+                  background: "var(--background)",
+                  color: "var(--muted-foreground)",
+                  boxShadow: "var(--shadow-neu-raised)",
+                }
+          }
+        >
+          <Mic className="h-6 w-6" />
+        </div>
+      </div>
+
+      {/* Status text */}
+      <div className="text-center min-h-[2.5rem] flex flex-col items-center justify-center">
+        {lastAction ? (
+          <>
+            <p className="text-lg font-extrabold text-foreground tracking-wide">
+              {ACTION_LABELS[lastAction] ?? lastAction}
+            </p>
+            {lastTranscript ? (
+              <p className="text-xs text-muted-foreground mt-0.5">
+                "{lastTranscript}"
+              </p>
+            ) : null}
+          </>
+        ) : listening ? (
+          <p className="text-sm font-semibold text-primary animate-pulse">
+            Listening…
+          </p>
+        ) : (
+          <p className="text-xs text-muted-foreground">
+            Say "dot", "one", "four", "six", "wide", "wicket"…
+          </p>
+        )}
+      </div>
+    </section>
   );
 }
