@@ -7,6 +7,7 @@ import { AppHeader } from "@/components/app-header";
 import { DesktopNotice } from "@/components/desktop-notice";
 import { ThemeProvider } from "@/components/theme-provider";
 import { PwaRegister } from "@/components/pwa-register";
+import { OfflineBanner } from "@/components/offline-banner";
 import "./globals.css";
 
 
@@ -98,6 +99,7 @@ export default function RootLayout({
           <SpeedInsights />
           <Analytics />
           <PwaRegister />
+          <OfflineBanner />
         </ThemeProvider>
       </body>
     </html>
