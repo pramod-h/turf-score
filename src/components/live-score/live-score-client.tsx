@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LiveChaseCard } from "@/components/live-score/live-chase-card";
 import { MatchTabs } from "@/components/live-score/match-tabs";
@@ -55,17 +53,9 @@ export function LiveScoreClient(props: LiveScoreClientProps) {
         : "Score pad";
 
   return (
-    <div className="flex flex-col h-dvh bg-background">
+    <div className="flex flex-col h-[calc(100dvh-3.5rem)] bg-background">
       {/* ── Scrollable content ── */}
-      <div className="flex-1 overflow-y-auto px-3 space-y-3 pb-4">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 pt-6 pb-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Matches
-        </Link>
-
+      <div className="flex-1 overflow-y-auto px-3 space-y-3 pb-4 pt-4">
         <MatchTabs matchId={props.match.id} active="live" />
 
         {c.error ? (
@@ -217,8 +207,7 @@ export function LiveScoreClient(props: LiveScoreClientProps) {
                 className="rounded-2xl p-4 space-y-4"
                 style={{
                   background: "var(--card)",
-                  border: "1px solid var(--border)",
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.35)",
+                  boxShadow: "var(--shadow-neu-card)",
                 }}
               >
                 <div>
@@ -250,14 +239,14 @@ export function LiveScoreClient(props: LiveScoreClientProps) {
                           c.openerStrikerId === p.id
                             ? {
                                 background:
-                                  "linear-gradient(135deg,var(--primary),#64b5f6)",
+                                  "var(--primary)",
                                 color: "var(--primary-foreground)",
-                                boxShadow: "0 2px 8px rgba(144,202,249,0.22)",
+                                boxShadow: "var(--shadow-neu-red)",
                               }
                             : {
-                                background: "var(--secondary)",
+                                background: "var(--background)",
                                 color: "var(--muted-foreground)",
-                                border: "1px solid var(--border)",
+                                boxShadow: "var(--shadow-neu-raised-xs)",
                               }
                         }
                       >
@@ -285,14 +274,14 @@ export function LiveScoreClient(props: LiveScoreClientProps) {
                             c.openerNonStrikerId === p.id
                             ? {
                                 background:
-                                  "linear-gradient(135deg,var(--primary),#64b5f6)",
+                                  "var(--primary)",
                                 color: "var(--primary-foreground)",
-                                boxShadow: "0 2px 8px rgba(144,202,249,0.22)",
+                                boxShadow: "var(--shadow-neu-red)",
                               }
                             : {
-                                background: "var(--secondary)",
+                                background: "var(--background)",
                                 color: "var(--muted-foreground)",
-                                border: "1px solid var(--border)",
+                                boxShadow: "var(--shadow-neu-raised-xs)",
                               }
                           }
                         >
@@ -317,15 +306,14 @@ export function LiveScoreClient(props: LiveScoreClientProps) {
                         style={
                           c.openerBowlerId === p.id
                           ? {
-                              background:
-                                "linear-gradient(135deg,#2c5d75,#8ec5ff)",
-                              color: "#061923",
-                              boxShadow: "0 2px 8px rgba(142,197,255,0.22)",
+                              background: "linear-gradient(145deg,#2979FF,#1565C0)",
+                              color: "#E3F2FD",
+                              boxShadow: "4px 4px 10px rgba(21,101,192,0.38), -2px -2px 6px var(--neu-highlight)",
                             }
                           : {
-                              background: "var(--secondary)",
+                              background: "var(--background)",
                               color: "var(--muted-foreground)",
-                              border: "1px solid var(--border)",
+                              boxShadow: "var(--shadow-neu-raised-xs)",
                             }
                         }
                       >
@@ -346,9 +334,9 @@ export function LiveScoreClient(props: LiveScoreClientProps) {
                   onClick={() => void c.confirmOpeners()}
                   className="w-full rounded-xl py-3 text-sm font-bold text-white uppercase tracking-widest transition-all active:scale-95 disabled:opacity-40"
                 style={{
-                  background: "linear-gradient(135deg,var(--primary),#64b5f6)",
+                  background: "var(--primary)",
                   color: "var(--primary-foreground)",
-                  boxShadow: "0 4px 14px rgba(144,202,249,0.24)",
+                  boxShadow: "var(--shadow-neu-red-lg)",
                 }}
                 >
                   {c.confirmingOpeners ? "Saving…" : "Start Match →"}

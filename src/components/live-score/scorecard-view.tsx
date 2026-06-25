@@ -5,6 +5,9 @@ import { getOversDisplay } from "@/modules/cricket/engine/helpers";
 import { LiveInningsState } from "@/modules/cricket/types";
 import { LiveBattingTable } from "@/components/live-score/live-batting-table";
 import { LiveBowlingTable } from "@/components/live-score/live-bowling-table";
+import { NeuCard } from "@/components/ui/neu-card";
+import { ConfettiBanner } from "@/components/ui/confetti-banner";
+import { NEU_INSET_SM } from "@/lib/neu-styles";
 
 type InningsCard = {
   inning: {
@@ -29,12 +32,9 @@ export function ScorecardView({ inningsCards, resultText }: ScorecardViewProps) 
 
   if (inningsCards.length === 0) {
     return (
-      <section
-        className="rounded-2xl p-4"
-        style={{ background: "var(--card)", border: "1px solid var(--border)" }}
-      >
+      <NeuCard className="p-4">
         <p className="text-sm text-muted-foreground">No innings yet.</p>
-      </section>
+      </NeuCard>
     );
   }
 
@@ -42,26 +42,16 @@ export function ScorecardView({ inningsCards, resultText }: ScorecardViewProps) 
 
   return (
     <div className="space-y-3">
-      {/* Result banner */}
       {resultText ? (
-        <div
-          className="rounded-2xl px-4 py-3"
-          style={{
-            background: "color-mix(in srgb, var(--primary) 10%, var(--card))",
-            border: "1px solid color-mix(in srgb, var(--primary) 30%, transparent)",
-          }}
-        >
-          <p className="text-sm font-bold text-primary">{resultText}</p>
-        </div>
+        <ConfettiBanner title={resultText} subtitle="🏆 Match complete" />
       ) : null}
 
-      {/* Cricbuzz-style innings tab bar */}
-      <div
-        className="rounded-2xl overflow-hidden"
-        style={{ background: "var(--card)", border: "1px solid var(--border)" }}
-      >
-        {/* Tabs */}
-        <div className="flex" style={{ borderBottom: "1px solid var(--border)" }}>
+      <NeuCard>
+        {/* Tabs — segmented control */}
+        <div
+          className="flex gap-1.5 mx-3 mt-3 mb-1 p-1.5 rounded-xl"
+          style={NEU_INSET_SM}
+        >
           {inningsCards.map((card, idx) => {
             const isActive = idx === activeTab;
             return (
@@ -69,24 +59,27 @@ export function ScorecardView({ inningsCards, resultText }: ScorecardViewProps) 
                 key={card.inning.id}
                 type="button"
                 onClick={() => setActiveTab(idx)}
-                className="flex-1 py-3 px-4 text-xs font-bold uppercase tracking-widest transition-colors relative"
-                style={{
-                  color: isActive ? "var(--foreground)" : "var(--muted-foreground)",
-                  background: isActive
-                    ? "color-mix(in srgb, var(--primary) 10%, transparent)"
-                    : "transparent",
-                }}
+                className="flex-1 py-2 px-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all active:scale-95"
+                style={
+                  isActive
+                    ? {
+                        background: "var(--primary)",
+                        color: "var(--primary-foreground)",
+                        boxShadow: "var(--shadow-neu-red-sm)",
+                      }
+                    : {
+                        background: "transparent",
+                        color: "var(--muted-foreground)",
+                      }
+                }
               >
                 {card.inning.batting_team}
-                <span className="ml-1.5 font-scoreboard text-base font-bold tabular-nums" style={{ color: isActive ? "var(--primary)" : "var(--muted-foreground)" }}>
+                <span
+                  className="ml-1 font-scoreboard text-sm font-bold tabular-nums"
+                  style={{ color: isActive ? "rgba(255,255,255,0.82)" : "var(--muted-foreground)" }}
+                >
                   {card.inning.total_runs}/{card.inning.wickets}
                 </span>
-                {isActive ? (
-                  <span
-                    className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full"
-                    style={{ background: "var(--primary)" }}
-                  />
-                ) : null}
               </button>
             );
           })}
@@ -111,7 +104,7 @@ export function ScorecardView({ inningsCards, resultText }: ScorecardViewProps) 
             </p>
           </div>
         </div>
-      </div>
+      </NeuCard>
 
       <LiveBattingTable
         battingStats={active.state.battingStats}

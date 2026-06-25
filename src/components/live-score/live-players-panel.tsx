@@ -2,6 +2,8 @@ import { BatterStats, BowlerStats, RecentBall } from "@/modules/cricket/types";
 import { HatTrickIcon } from "@/components/cricket-icons";
 import { getOversDisplay } from "@/modules/cricket/engine/helpers";
 import { Button } from "@/components/ui/button";
+import { NeuCard, NeuSectionHeader } from "@/components/ui/neu-card";
+import { NEU_INSET_SM } from "@/lib/neu-styles";
 
 type LivePlayersPanelProps = {
   striker: BatterStats | null;
@@ -22,6 +24,7 @@ type LivePlayersPanelProps = {
   onAddPlayer: () => void;
 };
 
+
 function BallPip({ type, label }: { type: string; label: string }) {
   const base =
     "flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold tabular-nums";
@@ -30,9 +33,9 @@ function BallPip({ type, label }: { type: string; label: string }) {
       <span
         className={base}
         style={{
-          background: "color-mix(in srgb, var(--destructive) 18%, transparent)",
-          color: "var(--destructive)",
-          border: "1px solid color-mix(in srgb, var(--destructive) 36%, transparent)",
+          background: "rgba(239,68,68,0.10)",
+          color: "var(--primary)",
+          boxShadow: "inset 2px 2px 4px rgba(239,68,68,0.12), inset -2px -2px 4px var(--neu-highlight-lg)",
         }}
       >
         W
@@ -43,9 +46,9 @@ function BallPip({ type, label }: { type: string; label: string }) {
       <span
         className={base}
         style={{
-          background: "linear-gradient(135deg,#2c5d75,#8ec5ff)",
-          color: "#061923",
-          boxShadow: "0 0 10px rgba(142,197,255,0.25)",
+          background: "linear-gradient(135deg,#1B5E20,#43A047)",
+          color: "#E8F5E9",
+          boxShadow: "3px 3px 8px rgba(27,94,32,0.35), -1px -1px 4px var(--neu-highlight)",
         }}
       >
         6
@@ -56,9 +59,9 @@ function BallPip({ type, label }: { type: string; label: string }) {
       <span
         className={base}
         style={{
-          background: "linear-gradient(135deg,#ffd166,#f4b942)",
-          color: "var(--accent-foreground)",
-          boxShadow: "0 0 8px rgba(255,209,102,0.25)",
+          background: "linear-gradient(135deg,#1565C0,#2979FF)",
+          color: "#E3F2FD",
+          boxShadow: "3px 3px 8px rgba(21,101,192,0.35), -1px -1px 4px var(--neu-highlight)",
         }}
       >
         4
@@ -69,9 +72,9 @@ function BallPip({ type, label }: { type: string; label: string }) {
       <span
         className={base}
         style={{
-          background: "var(--secondary)",
+          background: "var(--background)",
           color: "var(--muted-foreground)",
-          border: "1px solid var(--border)",
+          boxShadow: "var(--shadow-neu-inset-sm)",
         }}
       >
         {label}
@@ -79,10 +82,27 @@ function BallPip({ type, label }: { type: string; label: string }) {
     );
   if (type === "DOT")
     return (
-      <span className={`${base} bg-secondary text-muted-foreground`}>·</span>
+      <span
+        className={base}
+        style={{
+          background: "var(--background)",
+          color: "var(--muted-foreground)",
+          boxShadow: "var(--shadow-neu-inset-sm)",
+        }}
+      >
+        ·
+      </span>
     );
   return (
-    <span className={`${base} bg-secondary text-foreground font-semibold`}>
+    <span
+      className={base}
+      style={{
+        background: "var(--background)",
+        color: "var(--foreground)",
+        fontWeight: 600,
+        boxShadow: "var(--shadow-neu-inset-sm)",
+      }}
+    >
       {label}
     </span>
   );
@@ -117,14 +137,14 @@ export function LivePlayersPanel({
         <div
           className="rounded-2xl px-4 py-3 flex items-center gap-3"
           style={{
-          background: "rgba(245,158,11,0.12)",
-            border: "1px solid color-mix(in srgb, var(--accent) 34%, transparent)",
-            boxShadow: "0 2px 12px rgba(0,0,0,0.24)",
+            background: "var(--card)",
+            boxShadow: "var(--shadow-neu-card)",
+            borderLeft: "3px solid var(--accent)",
           }}
         >
           <HatTrickIcon className="h-9 w-9 shrink-0" />
           <div>
-            <p className="text-sm font-bold text-yellow-400">Hat-trick ball!</p>
+            <p className="text-sm font-bold text-amber-500">Hat-trick ball!</p>
             <p className="text-xs text-muted-foreground">
               {bowler?.name ?? "Bowler"} is on a hat-trick
             </p>
@@ -133,25 +153,8 @@ export function LivePlayersPanel({
       ) : null}
 
       {/* This over */}
-      <section
-        className="rounded-2xl overflow-hidden"
-        style={{
-          background: "var(--card)",
-          border: "1px solid var(--border)",
-          boxShadow: "0 2px 10px rgba(0,0,0,0.25)",
-        }}
-      >
-        <div
-          className="px-4 py-3"
-          style={{
-            background: "color-mix(in srgb, var(--primary) 9%, transparent)",
-            borderBottom: "1px solid color-mix(in srgb, var(--primary) 20%, transparent)",
-          }}
-        >
-          <p className="text-xs font-bold uppercase tracking-widest text-primary">
-            This over
-          </p>
-        </div>
+      <NeuCard>
+        <NeuSectionHeader title="This over" titleColor="var(--primary)" />
         <div className="px-4 py-3 flex flex-wrap gap-2">
           {recentBalls.length === 0 ? (
             <span className="text-sm text-muted-foreground">
@@ -167,28 +170,11 @@ export function LivePlayersPanel({
             ))
           )}
         </div>
-      </section>
+      </NeuCard>
 
       {/* Current batters & bowler */}
-      <section
-        className="rounded-2xl overflow-hidden"
-        style={{
-          background: "var(--card)",
-          border: "1px solid var(--border)",
-          boxShadow: "0 2px 12px rgba(0,0,0,0.3)",
-        }}
-      >
-        {/* Section header */}
-        <div
-          className="px-4 py-3 flex items-center justify-between"
-          style={{
-            background: "color-mix(in srgb, var(--primary) 10%, transparent)",
-            borderBottom: "1px solid color-mix(in srgb, var(--primary) 20%, transparent)",
-          }}
-        >
-          <p className="text-xs font-bold uppercase tracking-widest text-primary">
-            At the crease
-          </p>
+      <NeuCard>
+        <NeuSectionHeader title="At the crease" titleColor="var(--primary)">
           <Button
             type="button"
             variant="outline"
@@ -199,13 +185,16 @@ export function LivePlayersPanel({
           >
             {showAddPlayer ? "Cancel" : "Add New Player"}
           </Button>
-        </div>
+        </NeuSectionHeader>
 
         <div className="p-4 space-y-3">
           {showAddPlayer ? (
             <div
               className="space-y-3 rounded-xl p-3"
-              style={{ background: "var(--secondary)", border: "1px solid var(--border)" }}
+              style={{
+                background: "var(--background)",
+                boxShadow: "var(--shadow-neu-inset)",
+              }}
             >
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
@@ -254,8 +243,8 @@ export function LivePlayersPanel({
             <div
               className="flex items-center justify-between rounded-xl px-3 py-2.5"
               style={{
-                background: "color-mix(in srgb, var(--primary) 14%, var(--card))",
-                border: "1px solid color-mix(in srgb, var(--primary) 32%, transparent)",
+                background: "rgba(239,68,68,0.05)",
+                boxShadow: "inset 2px 2px 5px rgba(239,68,68,0.08), inset -2px -2px 5px var(--neu-highlight-lg)",
               }}
             >
               <div className="flex items-center gap-2.5">
@@ -283,7 +272,7 @@ export function LivePlayersPanel({
             {/* Non-striker */}
             <div
               className="flex items-center justify-between rounded-xl px-3 py-2.5"
-              style={{ background: "var(--secondary)", border: "1px solid var(--border)" }}
+              style={NEU_INSET_SM}
             >
               <div className="flex items-center gap-2.5">
                 <span className="h-2 w-2 rounded-full bg-muted-foreground/40" />
@@ -310,14 +299,14 @@ export function LivePlayersPanel({
             <div
               className="flex items-center justify-between rounded-xl px-3 py-2.5"
               style={{
-                background: "color-mix(in srgb, #8ec5ff 10%, var(--card))",
-                border: "1px solid color-mix(in srgb, #8ec5ff 28%, transparent)",
+                background: "rgba(41,121,255,0.05)",
+                boxShadow: "inset 2px 2px 5px rgba(41,121,255,0.08), inset -2px -2px 5px var(--neu-highlight-lg)",
               }}
             >
               <div className="flex items-center gap-2.5">
                 <span
                   className="h-2 w-2 rounded-full"
-                  style={{ background: "#8ec5ff" }}
+                  style={{ background: "#2979FF" }}
                 />
                 <div>
                   <p className="text-sm font-medium text-foreground leading-tight">
@@ -325,7 +314,7 @@ export function LivePlayersPanel({
                   </p>
                   <p
                     className="text-[10px] font-semibold uppercase tracking-wider"
-                    style={{ color: "#8ec5ff" }}
+                    style={{ color: "#2979FF" }}
                   >
                     Bowling
                   </p>
@@ -334,7 +323,7 @@ export function LivePlayersPanel({
               {bowler ? (
                 <p
                   className="font-mono text-sm tabular-nums font-semibold"
-                  style={{ color: "#8ec5ff" }}
+                  style={{ color: "#2979FF" }}
                 >
                   {bowler.runsConceded}/{bowler.wickets}
                   <span className="text-muted-foreground font-normal">
@@ -346,7 +335,7 @@ export function LivePlayersPanel({
             </div>
           </div>
         </div>
-      </section>
+      </NeuCard>
     </>
   );
 }

@@ -25,35 +25,39 @@ export function ScoringPad({
   onUndo,
   canUndo = false,
 }: ScoringPadProps) {
+  const neuButton = {
+    background: "var(--background)",
+    boxShadow: "var(--shadow-neu-raised)",
+  };
+
   return (
     <section
       className="rounded-2xl p-3 space-y-2"
       style={{
-        background: "var(--card)",
-        border: "1px solid var(--border)",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.35)",
+        background: "var(--background)",
+        boxShadow: "var(--shadow-neu-pad)",
       }}
     >
       {/* Row 1: 0, 1, 2, 4 */}
       <div className="grid grid-cols-4 gap-2">
         <button type="button" onClick={onDot}
           className="flex h-16 w-full items-center justify-center rounded-xl font-scoreboard text-2xl font-bold text-muted-foreground transition-all active:scale-95"
-          style={{ background: "var(--secondary)" }}>0</button>
+          style={neuButton}>0</button>
         <button type="button" onClick={onRun1}
           className="flex h-16 w-full items-center justify-center rounded-xl font-scoreboard text-2xl font-bold text-foreground transition-all active:scale-95"
-          style={{ background: "var(--secondary)" }}>1</button>
+          style={neuButton}>1</button>
         <button type="button" onClick={onRun2}
           className="flex h-16 w-full items-center justify-center rounded-xl font-scoreboard text-2xl font-bold text-foreground transition-all active:scale-95"
-          style={{ background: "var(--secondary)" }}>2</button>
-        {/* 4 — boundary */}
+          style={neuButton}>2</button>
+        {/* 4 — boundary (blue) */}
         <button
           type="button"
           onClick={onRun4}
-          className="flex h-16 w-full items-center justify-center rounded-xl font-scoreboard text-2xl font-bold text-white transition-all active:scale-95"
+          className="flex h-16 w-full items-center justify-center rounded-xl font-scoreboard text-2xl font-bold transition-all active:scale-95"
           style={{
-            background: "linear-gradient(135deg, #ffd166 0%, #f4b942 100%)",
-            boxShadow: "0 4px 14px rgba(255,209,102,0.25)",
-            color: "var(--accent-foreground)",
+            background: "linear-gradient(145deg, #2979FF, #1565C0)",
+            boxShadow: "5px 5px 12px rgba(21,101,192,0.38), -3px -3px 8px var(--neu-highlight)",
+            color: "#E3F2FD",
           }}
         >
           4
@@ -62,34 +66,34 @@ export function ScoringPad({
 
       {/* Row 2: 6, WD, NB, Undo */}
       <div className="grid grid-cols-4 gap-2">
-        {/* 6 — aerial boundary */}
+        {/* 6 — aerial boundary (green) */}
         <button
           type="button"
           onClick={onRun6}
-          className="flex h-16 w-full items-center justify-center rounded-xl font-scoreboard text-2xl font-bold text-white transition-all active:scale-95"
+          className="flex h-16 w-full items-center justify-center rounded-xl font-scoreboard text-2xl font-bold transition-all active:scale-95"
           style={{
-            background: "linear-gradient(135deg, #2c5d75 0%, #8ec5ff 100%)",
-            boxShadow: "0 4px 14px rgba(142,197,255,0.25)",
-            color: "#061923",
+            background: "linear-gradient(145deg, #43A047, #1B5E20)",
+            boxShadow: "5px 5px 12px rgba(27,94,32,0.38), -3px -3px 8px var(--neu-highlight)",
+            color: "#E8F5E9",
           }}
         >
           6
         </button>
-        {/* WD — neutral */}
+        {/* WD */}
         <button
           type="button"
           onClick={onWide}
           className="flex h-16 w-full items-center justify-center rounded-xl font-sans text-sm font-bold text-muted-foreground transition-all active:scale-95"
-          style={{ background: "var(--secondary)", border: "1px solid var(--border)" }}
+          style={neuButton}
         >
           WD
         </button>
-        {/* NB — neutral */}
+        {/* NB */}
         <button
           type="button"
           onClick={onNoBall}
           className="flex h-16 w-full items-center justify-center rounded-xl font-sans text-sm font-bold text-muted-foreground transition-all active:scale-95"
-          style={{ background: "var(--secondary)", border: "1px solid var(--border)" }}
+          style={neuButton}
         >
           NB
         </button>
@@ -98,8 +102,8 @@ export function ScoringPad({
           type="button"
           onClick={onUndo}
           disabled={!canUndo}
-          className="flex h-16 w-full flex-col items-center justify-center gap-1 rounded-xl text-muted-foreground transition-all active:scale-95 disabled:opacity-25 hover:text-foreground"
-          style={{ background: "var(--secondary)" }}
+          className="flex h-16 w-full flex-col items-center justify-center gap-1 rounded-xl text-muted-foreground transition-all active:scale-95 disabled:opacity-30 hover:text-foreground"
+          style={neuButton}
         >
           <Undo2 className="h-5 w-5" />
           <span className="font-sans text-[10px] font-semibold uppercase tracking-wider">Undo</span>
@@ -110,11 +114,11 @@ export function ScoringPad({
       <button
         type="button"
         onClick={onWicket}
-        className="flex h-14 w-full items-center justify-center gap-3 rounded-xl font-sans text-base font-bold uppercase tracking-widest text-white transition-all active:scale-95"
+        className="flex h-14 w-full items-center justify-center gap-3 rounded-xl font-sans text-base font-bold uppercase tracking-widest transition-all active:scale-95"
         style={{
-          background: "linear-gradient(135deg, #B91C1C 0%, #EF4444 100%)",
-          boxShadow: "0 4px 16px rgba(255,180,171,0.22)",
-          color: "#2d0604",
+          background: "linear-gradient(145deg, #EF4444, #B91C1C)",
+          boxShadow: "var(--shadow-neu-red-lg)",
+          color: "#FFFFFF",
         }}
       >
         <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current" aria-hidden="true">

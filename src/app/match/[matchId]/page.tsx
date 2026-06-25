@@ -1,12 +1,11 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { buildScorecard } from "@/modules/match/build-scorecard";
 import { getMatchScorecard } from "@/modules/match/get-match-scorecard";
 import { getMatchResultSummary } from "@/modules/match/get-match-result-summary";
 import { MatchTabs } from "@/components/live-score/match-tabs";
 import { ScorecardView } from "@/components/live-score/scorecard-view";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 5;
 
 type MatchScorecardPageProps = {
   params: Promise<{
@@ -54,22 +53,15 @@ export default async function MatchScorecardPage({
       : null;
 
   return (
-    <main className="min-h-screen px-3 pb-10 space-y-3" style={{ background: "var(--background)" }}>
-      <Link
-        href="/"
-        className="inline-flex items-center gap-1.5 pt-6 pb-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Matches
-      </Link>
-
+    <main className="min-h-[calc(100dvh-3.5rem)] px-3 pb-10 pt-4 space-y-3">
       <MatchTabs matchId={match.id} active="scorecard" />
 
       {/* Match header */}
       <section
-        className="rounded-2xl border border-border bg-card px-4 py-4"
+        className="rounded-2xl px-4 py-4"
         style={{
-          boxShadow: "0 6px 20px rgba(0,0,0,0.24)",
+          background: "var(--card)",
+          boxShadow: "var(--shadow-neu-card)",
         }}
       >
         <div className="flex items-start justify-between gap-3">

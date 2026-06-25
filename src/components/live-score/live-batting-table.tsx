@@ -6,6 +6,7 @@ import {
   FiftyIcon,
   CenturyIcon,
 } from "@/components/cricket-icons";
+import { NeuCard, NeuSectionHeader } from "@/components/ui/neu-card";
 
 type LiveBattingTableProps = {
   battingStats: Record<string, BatterStats>;
@@ -64,12 +65,8 @@ export function LiveBattingTable({
   const rows = Object.values(battingStats);
 
   return (
-    <section className="rounded-2xl bg-card border border-border overflow-hidden">
-      <div className="px-4 pt-4 pb-2">
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-          Batting
-        </p>
-      </div>
+    <NeuCard>
+      <NeuSectionHeader title="Batting" divider={false} className="pt-4 pb-2" />
 
       <table className="w-full text-sm">
         <thead>
@@ -130,6 +127,6 @@ export function LiveBattingTable({
           })}
         </tbody>
       </table>
-    </section>
+    </NeuCard>
   );
 }

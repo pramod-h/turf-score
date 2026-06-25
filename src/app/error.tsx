@@ -15,7 +15,7 @@ export default function RootError({
   }, [error]);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col items-center justify-center gap-4 p-4 text-center">
+    <main className="mx-auto flex min-h-[calc(100dvh-3.5rem)] max-w-md flex-col items-center justify-center gap-4 p-4 text-center">
       <div className="space-y-1">
         <h1 className="text-xl font-bold">Something went wrong</h1>
         <p className="text-sm text-muted-foreground">

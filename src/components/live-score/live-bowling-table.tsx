@@ -1,5 +1,6 @@
 import { BowlerStats } from "@/modules/cricket/types";
 import { getOversDisplay } from "@/modules/cricket/engine/helpers";
+import { NeuCard, NeuSectionHeader } from "@/components/ui/neu-card";
 
 type LiveBowlingTableProps = {
   bowlingStats: Record<string, BowlerStats>;
@@ -13,19 +14,13 @@ export function LiveBowlingTable({
   const rows = Object.values(bowlingStats);
 
   return (
-    <section className="rounded-2xl bg-card border border-border overflow-hidden">
-      <div className="px-4 pt-4 pb-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-          Bowling
-        </p>
-      </div>
+    <NeuCard>
+      <NeuSectionHeader title="Bowling" divider={false} className="pt-4 pb-2" />
 
       <table className="w-full text-sm">
         <thead>
           <tr className="border-t border-border bg-muted/30">
-            <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">
-              Bowler
-            </th>
+            <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground"></th>
             <th className="px-2 py-2 text-right text-xs font-medium text-muted-foreground">O</th>
             <th className="px-2 py-2 text-right text-xs font-medium text-muted-foreground">R</th>
             <th className="px-4 py-2 text-right text-xs font-medium text-muted-foreground">W</th>
@@ -41,9 +36,7 @@ export function LiveBowlingTable({
                 className={`border-t border-border ${isCurrent ? "bg-primary/10" : ""}`}
               >
                 <td className="px-4 py-2.5">
-                  <span
-                    className={`font-medium ${isCurrent ? "text-foreground" : "text-muted-foreground"}`}
-                  >
+                  <span className={`font-medium ${isCurrent ? "text-foreground" : "text-muted-foreground"}`}>
                     {player.name}
                   </span>
                   {isCurrent ? (
@@ -64,6 +57,6 @@ export function LiveBowlingTable({
           })}
         </tbody>
       </table>
-    </section>
+    </NeuCard>
   );
 }

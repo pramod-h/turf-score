@@ -68,7 +68,7 @@ export function FiftyIcon({ className = "h-5 w-5" }: IconProps) {
       {/* Star shape */}
       <path
         d="M16 3 L18.9 11.2 L27.7 11.2 L20.9 16.4 L23.4 24.6 L16 19.8 L8.6 24.6 L11.1 16.4 L4.3 11.2 L13.1 11.2 Z"
-        fill="#22C55E"
+        fill="#BF360C"
       />
       {/* Text 50 */}
       <text
@@ -126,11 +126,45 @@ export function HatTrickIcon({ className = "h-5 w-5" }: IconProps) {
       {/* Hat top */}
       <rect x="10" y="7" width="12" height="2.5" rx="1" fill="#111827" />
       {/* Band */}
-      <rect x="10" y="18" width="12" height="2.5" fill="#22C55E" />
+      <rect x="10" y="18" width="12" height="2.5" fill="#BF360C" />
       {/* Cricket ball on top */}
       <circle cx="16" cy="5.5" r="3.5" fill="#EF4444" />
       <path d="M14 4 Q16 5.5 18 4" stroke="white" strokeWidth="0.8" fill="none" strokeLinecap="round" opacity="0.7" />
       <path d="M14 7 Q16 5.5 18 7" stroke="white" strokeWidth="0.8" fill="none" strokeLinecap="round" opacity="0.7" />
+    </svg>
+  );
+}
+
+export function TennisBallIcon({ className = "h-5 w-5" }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-label="Tennis Ball">
+      <circle cx="12" cy="12" r="10" fill="currentColor" />
+      <path
+        d="M7.5 3.5 Q2.5 12 7.5 20.5"
+        fill="none"
+        stroke="rgba(0,0,0,0.3)"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M16.5 3.5 Q21.5 12 16.5 20.5"
+        fill="none"
+        stroke="rgba(0,0,0,0.3)"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+export function CricketBatIcon({ className = "h-5 w-5" }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-label="Cricket Bat">
+      <rect x="10.5" y="1.5" width="3" height="7" rx="1.5" fill="currentColor" />
+      <path
+        d="M8 8.5 L7.5 15 Q7.5 22 12 22 Q16.5 22 16.5 15 L16 8.5 Z"
+        fill="currentColor"
+      />
     </svg>
   );
 }

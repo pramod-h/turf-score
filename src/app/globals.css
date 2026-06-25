@@ -7,7 +7,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-nunito);
   --font-mono: var(--font-geist-mono);
   --font-scoreboard: var(--font-barlow-condensed);
   --font-heading: var(--font-sans);
@@ -49,41 +49,102 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Minimal Material dark palette */
+/* Neumorphic / Soft Clay — Light Pastel — Red accent — Blue/4 Green/6 */
 :root {
-  --background: #111315;
-  --foreground: #e4e7eb;
-  --card: #1a1d20;
-  --card-foreground: #e4e7eb;
-  --popover: #1d2024;
-  --popover-foreground: #e4e7eb;
-  --primary: #90caf9;
-  --primary-foreground: #071923;
-  --secondary: #24282d;
-  --secondary-foreground: #c8ced6;
-  --muted: #202428;
-  --muted-foreground: #9aa4ad;
-  --accent: #ffcc80;
-  --accent-foreground: #251600;
-  --destructive: #ef9a9a;
-  --destructive-foreground: #ffffff;
-  --border: #30363d;
-  --input: #24282d;
-  --ring: #90caf9;
-  --chart-1: #90caf9;
-  --chart-2: #ffcc80;
-  --chart-3: #a5d6a7;
-  --chart-4: #ef9a9a;
-  --chart-5: #9aa4ad;
-  --radius: 0.875rem;
-  --sidebar: #1a1d20;
-  --sidebar-foreground: #e4e7eb;
-  --sidebar-primary: #90caf9;
-  --sidebar-primary-foreground: #071923;
-  --sidebar-accent: #24282d;
-  --sidebar-accent-foreground: #e4e7eb;
-  --sidebar-border: #30363d;
-  --sidebar-ring: #90caf9;
+  --background: #E8EAF0;
+  --foreground: #1A1C2E;
+  --card: #F4F5FB;
+  --card-foreground: #1A1C2E;
+  --popover: #F4F5FB;
+  --popover-foreground: #1A1C2E;
+  --primary: #EF4444;
+  --primary-foreground: #FFFFFF;
+  --secondary: #EEF0F8;
+  --secondary-foreground: #1A1C2E;
+  --muted: #F2F4FA;
+  --muted-foreground: #5C6478;
+  --accent: #F59E0B;
+  --accent-foreground: #1A0800;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(0,0,0,0.07);
+  --input: #EEF0F8;
+  --ring: #EF4444;
+  --chart-1: #EF4444;
+  --chart-2: #F59E0B;
+  --chart-3: #3B82F6;
+  --chart-4: #22C55E;
+  --chart-5: #8892A4;
+  --radius: 1rem;
+  --sidebar: #F4F5FB;
+  --sidebar-foreground: #1A1C2E;
+  --sidebar-primary: #EF4444;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #EEF0F8;
+  --sidebar-accent-foreground: #1A1C2E;
+  --sidebar-border: rgba(0,0,0,0.07);
+  --sidebar-ring: #EF4444;
+
+  /* Neumorphic shadow tokens — override in .dark */
+  --shadow-neu-card:     4px 4px 12px rgba(0,0,0,0.07), -3px -3px 8px rgba(255,255,255,0.72);
+  --shadow-neu-card-lg:  6px 6px 16px rgba(0,0,0,0.08), -4px -4px 12px rgba(255,255,255,0.80);
+  --shadow-neu-raised:   4px 4px 10px rgba(0,0,0,0.09), -4px -4px 10px rgba(255,255,255,0.82);
+  --shadow-neu-raised-sm:3px 3px 8px rgba(0,0,0,0.08),  -3px -3px 8px rgba(255,255,255,0.78);
+  --shadow-neu-raised-xs:2px 2px 6px rgba(0,0,0,0.07),  -2px -2px 6px rgba(255,255,255,0.72);
+  --shadow-neu-inset:    inset 2px 2px 5px rgba(0,0,0,0.08), inset -2px -2px 5px rgba(255,255,255,0.82);
+  --shadow-neu-inset-sm: inset 2px 2px 4px rgba(0,0,0,0.06), inset -2px -2px 4px rgba(255,255,255,0.78);
+  --shadow-neu-pad:      8px 8px 20px rgba(0,0,0,0.08), -8px -8px 20px rgba(255,255,255,0.80);
+  --header-bg:           rgba(244,245,251,0.92);
+  --header-border:       rgba(0,0,0,0.06);
+  --header-shadow:       0 2px 12px rgba(0,0,0,0.06);
+  /* Highlight component of colored shadows — switches in dark mode */
+  --neu-highlight:       rgba(255,255,255,0.50);
+  --neu-highlight-lg:    rgba(255,255,255,0.78);
+  /* Red button shadow tokens — use these for all primary/red buttons */
+  --shadow-neu-red:    3px 3px 8px rgba(239,68,68,0.28),  -3px -3px 8px var(--neu-highlight-lg);
+  --shadow-neu-red-sm: 2px 2px 6px rgba(239,68,68,0.22),  -2px -2px 6px var(--neu-highlight-lg);
+  --shadow-neu-red-lg: 4px 4px 12px rgba(239,68,68,0.34), -3px -3px 10px var(--neu-highlight-lg);
+}
+
+/* Dark mode overrides */
+.dark {
+  --background: #1C1F2E;
+  --foreground: #E8EAF4;
+  --card: #22263A;
+  --card-foreground: #E8EAF4;
+  --popover: #22263A;
+  --popover-foreground: #E8EAF4;
+  --secondary: #1A1E2E;
+  --secondary-foreground: #E8EAF4;
+  --muted: #1E2236;
+  --muted-foreground: #7C8BAB;
+  --border: rgba(255,255,255,0.08);
+  --input: #1A1E2E;
+  --sidebar: #22263A;
+  --sidebar-foreground: #E8EAF4;
+  --sidebar-accent: #1A1E2E;
+  --sidebar-accent-foreground: #E8EAF4;
+  --sidebar-border: rgba(255,255,255,0.08);
+
+  --shadow-neu-card:     4px 4px 12px rgba(0,0,0,0.36), -2px -2px 6px rgba(255,255,255,0.04);
+  --shadow-neu-card-lg:  6px 6px 16px rgba(0,0,0,0.40), -3px -3px 8px rgba(255,255,255,0.04);
+  --shadow-neu-raised:   4px 4px 10px rgba(0,0,0,0.34), -3px -3px 8px rgba(255,255,255,0.04);
+  --shadow-neu-raised-sm:3px 3px 8px rgba(0,0,0,0.32),  -2px -2px 6px rgba(255,255,255,0.04);
+  --shadow-neu-raised-xs:2px 2px 6px rgba(0,0,0,0.28),  -2px -2px 4px rgba(255,255,255,0.04);
+  --shadow-neu-inset:    inset 2px 2px 5px rgba(0,0,0,0.36), inset -2px -2px 4px rgba(255,255,255,0.04);
+  --shadow-neu-inset-sm: inset 2px 2px 4px rgba(0,0,0,0.30), inset -1px -1px 4px rgba(255,255,255,0.04);
+  --shadow-neu-pad:      8px 8px 20px rgba(0,0,0,0.42), -4px -4px 12px rgba(255,255,255,0.04);
+  --header-bg:           rgba(28,31,46,0.94);
+  --header-border:       rgba(255,255,255,0.08);
+  --header-shadow:       0 2px 12px rgba(0,0,0,0.30);
+  --neu-highlight:       rgba(255,255,255,0.08);
+  --neu-highlight-lg:    rgba(255,255,255,0.06);
+}
+
+@keyframes confetti-float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.70; }
+  33%       { transform: translateY(-6px) rotate(20deg); opacity: 0.85; }
+  66%       { transform: translateY(3px) rotate(-10deg); opacity: 0.60; }
 }
 
 @keyframes cricket-ball-float {
@@ -130,12 +191,21 @@
   }
 }
 
+@layer utilities {
+  .neu-button {
+    box-shadow: var(--shadow-neu-raised-xs);
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background: var(--background);
+    background-attachment: fixed;
+    min-height: 100vh;
   }
   html {
     @apply font-sans;

@@ -1,24 +1,63 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { X } from "lucide-react";
 import { createMatch } from "@/modules/match/create-match";
 import { MatchSetupFormValues } from "@/modules/match/setup-schema";
+import {
+  getRegisteredPlayers,
+  RegisteredPlayer,
+} from "@/modules/players/get-registered-players";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
+const ACCENTS = {
+  blue: {
+    border: "color-mix(in srgb, #60A5FA 28%, var(--border))",
+    headerBg: "color-mix(in srgb, #60A5FA 10%, var(--card))",
+    headerBorder: "color-mix(in srgb, #60A5FA 22%, var(--border))",
+    color: "#60A5FA",
+  },
+  amber: {
+    border: "color-mix(in srgb, #FBBF24 28%, var(--border))",
+    headerBg: "color-mix(in srgb, #FBBF24 10%, var(--card))",
+    headerBorder: "color-mix(in srgb, #FBBF24 22%, var(--border))",
+    color: "#FBBF24",
+  },
+} as const;
 
 function SectionCard({
   title,
   children,
+  accent,
 }: {
   title: string;
   children: React.ReactNode;
+  accent?: keyof typeof ACCENTS;
 }) {
+  const a = accent ? ACCENTS[accent] : null;
   return (
-    <div className="rounded-2xl bg-card border border-border overflow-hidden">
-      <div className="px-4 pt-4 pb-3 border-b border-border">
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+    <div
+      className="rounded-2xl overflow-hidden"
+      style={{
+        background: "var(--card)",
+        boxShadow: "var(--shadow-neu-card)",
+      }}
+    >
+      <div
+        className="px-4 pt-4 pb-3"
+        style={
+          a
+            ? { background: a.headerBg, borderBottom: `1px solid rgba(0,0,0,0.05)` }
+            : { borderBottom: "1px solid rgba(0,0,0,0.05)" }
+        }
+      >
+        <p
+          className="text-sm font-extrabold uppercase tracking-widest"
+          style={{ color: a ? a.color : "var(--foreground)" }}
+        >
           {title}
         </p>
       </div>
@@ -27,10 +66,16 @@ function SectionCard({
   );
 }
 
-function FieldRow({ label, children }: { label: string; children: React.ReactNode }) {
+function FieldRow({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="space-y-1.5">
-      <label className="text-sm font-medium text-foreground">{label}</label>
+      <label className="text-sm font-bold text-foreground">{label}</label>
       {children}
     </div>
   );
@@ -47,69 +92,196 @@ function PillToggle<T extends string>({
 }) {
   return (
     <div className="flex gap-2">
-      {options.map((opt) => (
-        <button
-          key={opt.value}
-          type="button"
-          onClick={() => onChange(opt.value)}
-          className={`flex-1 rounded-xl py-2.5 text-sm font-semibold transition-all ${
-            value === opt.value
-              ? "bg-primary text-primary-foreground shadow-sm"
-              : "border border-border bg-transparent text-foreground hover:bg-muted"
-          }`}
-        >
-          {opt.label}
-        </button>
-      ))}
+      {options.map((opt) => {
+        const isActive = value === opt.value;
+        return (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => onChange(opt.value)}
+            className="flex-1 rounded-xl py-2.5 text-sm font-bold transition-all active:scale-95"
+            style={
+              isActive
+                ? {
+                    background: "var(--primary)",
+                    color: "var(--primary-foreground)",
+                    boxShadow: "var(--shadow-neu-red)",
+                  }
+                : {
+                    background: "var(--background)",
+                    color: "var(--muted-foreground)",
+                    boxShadow: "var(--shadow-neu-raised-sm)",
+                  }
+            }
+          >
+            {opt.label}
+          </button>
+        );
+      })}
     </div>
   );
 }
 
-function PlayerList({
-  players,
-  onUpdate,
-  onAdd,
-  onRemove,
+function PlayerPicker({
+  registeredPlayers,
+  loading,
+  selected,
+  takenByOther,
+  onChange,
 }: {
-  players: string[];
-  onUpdate: (index: number, value: string) => void;
-  onAdd: () => void;
-  onRemove: (index: number) => void;
+  registeredPlayers: RegisteredPlayer[];
+  loading: boolean;
+  selected: string[];
+  takenByOther: string[];
+  onChange: (names: string[]) => void;
 }) {
+  const [customInput, setCustomInput] = useState("");
+  const [search, setSearch] = useState("");
+
+  const registeredLower = new Set(
+    registeredPlayers.map((p) => p.name.toLowerCase())
+  );
+  const takenLower = new Set(takenByOther.map((n) => n.toLowerCase()));
+  const customSelected = selected.filter(
+    (n) => !registeredLower.has(n.toLowerCase())
+  );
+  const filtered =
+    search.trim()
+      ? registeredPlayers.filter((p) =>
+          p.name.toLowerCase().includes(search.toLowerCase())
+        )
+      : registeredPlayers;
+
+  const toggle = (name: string) => {
+    const lower = name.toLowerCase();
+    if (takenLower.has(lower)) return;
+    if (selected.some((n) => n.toLowerCase() === lower)) {
+      onChange(selected.filter((n) => n.toLowerCase() !== lower));
+    } else {
+      onChange([...selected, name]);
+    }
+  };
+
+  const addCustom = () => {
+    const trimmed = customInput.trim();
+    if (
+      trimmed &&
+      !selected.some((n) => n.toLowerCase() === trimmed.toLowerCase())
+    ) {
+      onChange([...selected, trimmed]);
+      setCustomInput("");
+    }
+  };
+
   return (
-    <div className="space-y-2">
-      {players.map((player, idx) => (
-        <div key={idx} className="flex items-center gap-2">
-          <span className="w-5 shrink-0 text-center text-xs tabular-nums text-muted-foreground">
-            {idx + 1}
-          </span>
-          <Input
-            className="flex-1"
-            placeholder={`Player ${idx + 1}`}
-            value={player}
-            onChange={(e) => onUpdate(idx, e.target.value)}
-          />
-          {players.length > 2 ? (
-            <button
-              type="button"
-              onClick={() => onRemove(idx)}
-              className="shrink-0 text-muted-foreground/60 hover:text-destructive transition-colors"
+    <div className="space-y-3">
+      {loading ? (
+        <p className="text-xs text-muted-foreground">Loading roster…</p>
+      ) : registeredPlayers.length === 0 ? (
+        <p className="text-xs text-muted-foreground">
+          No players in roster.{" "}
+          <Link
+            href="/players"
+            className="text-primary hover:underline underline-offset-2"
+          >
+            Add players →
+          </Link>
+        </p>
+      ) : (
+        <>
+          {registeredPlayers.length > 8 ? (
+            <Input
+              placeholder="Search roster…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="text-sm"
+            />
+          ) : null}
+          <div className="flex flex-wrap gap-2">
+            {filtered.map((p) => {
+              const isSelected = selected.some(
+                (n) => n.toLowerCase() === p.name.toLowerCase()
+              );
+              const isTaken = takenLower.has(p.name.toLowerCase());
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => toggle(p.name)}
+                  disabled={isTaken}
+                  title={isTaken ? "Already in the other team" : undefined}
+                  className="rounded-full px-3 py-1.5 text-sm font-semibold transition-all active:scale-95"
+                  style={
+                    isTaken
+                      ? { background: "var(--background)", color: "rgba(136,146,164,0.4)", textDecoration: "line-through", cursor: "not-allowed", boxShadow: "inset 2px 2px 4px rgba(0,0,0,0.07), inset -2px -2px 4px var(--neu-highlight-lg)" }
+                      : isSelected
+                      ? { background: "var(--primary)", color: "var(--primary-foreground)", boxShadow: "var(--shadow-neu-red-sm)" }
+                      : { background: "var(--background)", color: "var(--foreground)", boxShadow: "var(--shadow-neu-raised-xs)" }
+                  }
+                >
+                  {p.name}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+
+      {/* Unlisted player input */}
+      <div className="flex gap-2">
+        <Input
+          placeholder="Add unlisted player…"
+          value={customInput}
+          onChange={(e) => setCustomInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              addCustom();
+            }
+          }}
+          className="flex-1 text-sm"
+        />
+        <Button
+          type="button"
+          variant="outline"
+          className="h-11 px-4 shrink-0"
+          onClick={addCustom}
+          disabled={!customInput.trim()}
+        >
+          Add
+        </Button>
+      </div>
+
+      {/* Custom player chips */}
+      {customSelected.length > 0 ? (
+        <div className="flex flex-wrap gap-1.5">
+          {customSelected.map((name) => (
+            <span
+              key={name}
+              className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold"
+              style={{
+                background: "var(--background)",
+                boxShadow: "var(--shadow-neu-raised-xs)",
+              }}
             >
-              <Trash2 className="h-4 w-4" />
-            </button>
-          ) : (
-            <span className="w-4 shrink-0" />
-          )}
+              {name}
+              <button
+                type="button"
+                onClick={() => onChange(selected.filter((n) => n !== name))}
+                className="text-muted-foreground hover:text-destructive ml-0.5"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          ))}
         </div>
-      ))}
-      <button
-        type="button"
-        onClick={onAdd}
-        className="flex items-center gap-1.5 pt-1 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-      >
-        <Plus className="h-4 w-4" />
-        Add Player
-      </button>
+      ) : null}
+
+      <p className="text-xs text-muted-foreground">
+        {selected.length < 2
+          ? `${selected.length}/2 players selected — min. 2 required`
+          : `${selected.length} player${selected.length !== 1 ? "s" : ""} selected`}
+      </p>
     </div>
   );
 }
@@ -131,30 +303,24 @@ export function MatchSetupForm() {
   const [oversPerInnings, setOversPerInnings] = useState("5");
   const [teamAName, setTeamAName] = useState("");
   const [teamBName, setTeamBName] = useState("");
-  const [teamAPlayers, setTeamAPlayers] = useState(["", ""]);
-  const [teamBPlayers, setTeamBPlayers] = useState(["", ""]);
+  const [teamAPlayers, setTeamAPlayers] = useState<string[]>([]);
+  const [teamBPlayers, setTeamBPlayers] = useState<string[]>([]);
   const [tossWinner, setTossWinner] = useState<"teamA" | "teamB">("teamA");
   const [tossDecision, setTossDecision] = useState<"BAT" | "BOWL">("BAT");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const updatePlayer = (team: "A" | "B", index: number, value: string) => {
-    if (team === "A") {
-      setTeamAPlayers((prev) => { const n = [...prev]; n[index] = value; return n; });
-    } else {
-      setTeamBPlayers((prev) => { const n = [...prev]; n[index] = value; return n; });
-    }
-  };
+  const [registeredPlayers, setRegisteredPlayers] = useState<
+    RegisteredPlayer[]
+  >([]);
+  const [loadingPlayers, setLoadingPlayers] = useState(true);
 
-  const addPlayer = (team: "A" | "B") => {
-    if (team === "A") setTeamAPlayers((prev) => [...prev, ""]);
-    else setTeamBPlayers((prev) => [...prev, ""]);
-  };
-
-  const removePlayer = (team: "A" | "B", index: number) => {
-    if (team === "A") setTeamAPlayers((prev) => prev.filter((_, i) => i !== index));
-    else setTeamBPlayers((prev) => prev.filter((_, i) => i !== index));
-  };
+  useEffect(() => {
+    getRegisteredPlayers()
+      .then(setRegisteredPlayers)
+      .catch(() => {})
+      .finally(() => setLoadingPlayers(false));
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -167,8 +333,8 @@ export function MatchSetupForm() {
         wicketsPerInnings: 10,
         teamAName,
         teamBName,
-        teamAPlayers: teamAPlayers.map((p) => p.trim()).filter(Boolean),
-        teamBPlayers: teamBPlayers.map((p) => p.trim()).filter(Boolean),
+        teamAPlayers: teamAPlayers.filter(Boolean),
+        teamBPlayers: teamBPlayers.filter(Boolean),
         tossWinner,
         tossDecision,
       };
@@ -189,7 +355,13 @@ export function MatchSetupForm() {
       {/* Match details */}
       <SectionCard title="Match Details">
         <FieldRow label="Match Name">
-          <div className="w-full rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm text-muted-foreground pointer-events-none select-none tabular-nums">
+          <div
+            className="w-full rounded-xl px-4 py-3 text-sm font-medium text-muted-foreground pointer-events-none select-none"
+            style={{
+              background: "var(--background)",
+              boxShadow: "var(--shadow-neu-inset)",
+            }}
+          >
             {name}
           </div>
         </FieldRow>
@@ -204,33 +376,39 @@ export function MatchSetupForm() {
       </SectionCard>
 
       {/* Team A */}
-      <SectionCard title="Team A">
+      <SectionCard title="Team A" accent="blue">
         <Input
           placeholder="Team A Name"
           value={teamAName}
           onChange={(e) => setTeamAName(e.target.value)}
         />
-        <PlayerList
-          players={teamAPlayers}
-          onUpdate={(i, v) => updatePlayer("A", i, v)}
-          onAdd={() => addPlayer("A")}
-          onRemove={(i) => removePlayer("A", i)}
-        />
+        <FieldRow label="Players">
+          <PlayerPicker
+            registeredPlayers={registeredPlayers}
+            loading={loadingPlayers}
+            selected={teamAPlayers}
+            takenByOther={teamBPlayers}
+            onChange={setTeamAPlayers}
+          />
+        </FieldRow>
       </SectionCard>
 
       {/* Team B */}
-      <SectionCard title="Team B">
+      <SectionCard title="Team B" accent="amber">
         <Input
           placeholder="Team B Name"
           value={teamBName}
           onChange={(e) => setTeamBName(e.target.value)}
         />
-        <PlayerList
-          players={teamBPlayers}
-          onUpdate={(i, v) => updatePlayer("B", i, v)}
-          onAdd={() => addPlayer("B")}
-          onRemove={(i) => removePlayer("B", i)}
-        />
+        <FieldRow label="Players">
+          <PlayerPicker
+            registeredPlayers={registeredPlayers}
+            loading={loadingPlayers}
+            selected={teamBPlayers}
+            takenByOther={teamAPlayers}
+            onChange={setTeamBPlayers}
+          />
+        </FieldRow>
       </SectionCard>
 
       {/* Toss */}
@@ -263,13 +441,18 @@ export function MatchSetupForm() {
         </div>
       ) : null}
 
-      <Button
-        className="w-full h-12 text-base font-semibold"
+      <button
         type="submit"
         disabled={loading}
+        className="w-full h-14 rounded-2xl text-base font-bold uppercase tracking-widest transition-all active:scale-[0.98] disabled:opacity-50"
+        style={{
+          background: "var(--primary)",
+          color: "var(--primary-foreground)",
+          boxShadow: "var(--shadow-neu-red-lg)",
+        }}
       >
         {loading ? "Creating match…" : "Start Match"}
-      </Button>
+      </button>
     </form>
   );
 }

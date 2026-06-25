@@ -2,6 +2,10 @@
   "name": "turf-score",
   "version": "0.1.0",
   "private": true,
+  "author": {
+    "name": "Pramod H",
+    "email": "pramodsh582@gmail.com"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
