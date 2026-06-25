@@ -30,8 +30,36 @@ const barlowCondensed = Barlow_Condensed({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://turf-score.vercel.app"
+  ),
   title: "Turf Score",
-  description: "Fast cricket scoring for turf matches",
+  description:
+    "Real-time cricket scoring for turf matches. Track live scores, ball-by-ball updates, batting & bowling stats, and match results — built for weekend warriors.",
+  icons: {
+    icon: [
+      { url: "/images/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/images/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/images/favicon.ico" },
+    ],
+    apple: { url: "/images/apple-touch-icon.png" },
+    other: [
+      { rel: "android-chrome-192", url: "/images/android-chrome-192x192.png" },
+    ],
+  },
+  openGraph: {
+    title: "Turf Score",
+    description:
+      "Real-time cricket scoring for turf matches. Track live scores, ball-by-ball updates, batting & bowling stats, and match results.",
+    images: [{ url: "/images/android-chrome-512x512.png", width: 512, height: 512 }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Turf Score",
+    description: "Real-time cricket scoring for turf matches.",
+    images: ["/images/android-chrome-512x512.png"],
+  },
 };
 
 export default function RootLayout({
